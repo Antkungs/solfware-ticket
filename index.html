@@ -24,9 +24,14 @@ html,body{overflow-x:clip}
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--font-ui);background:var(--color-paper);color:var(--color-ink);line-height:1.5;padding-bottom:calc(var(--s6) + env(safe-area-inset-bottom))}
 .wrap{max-width:480px;margin:0 auto;padding:var(--s5) var(--s4)}
-.head{padding:var(--s2) 0 var(--s5)}
-.head h1{font-size:24px;font-weight:700;font-style:normal;letter-spacing:-0.01em;overflow-wrap:anywhere;min-width:0}
-.head p{color:var(--color-muted);font-size:14px;margin-top:2px}
+.hero{
+  background-image:linear-gradient(90deg,rgba(200,233,222,.97) 0%,rgba(200,233,222,.93) 42%,rgba(200,233,222,.40) 72%,rgba(200,233,222,0) 100%),url('banner.jpg');
+  background-size:cover;background-position:right center;background-repeat:no-repeat;
+  border-radius:var(--rad-m);padding:var(--s5) var(--s4);margin-bottom:var(--s5);
+  min-height:104px;display:flex;flex-direction:column;justify-content:center;
+}
+.hero h1{font-size:24px;font-weight:700;font-style:normal;letter-spacing:-0.01em;overflow-wrap:anywhere;min-width:0;max-width:66%}
+.hero p{color:#3e5a4d;font-size:14px;margin-top:2px;max-width:66%}
 .who{display:flex;align-items:center;gap:var(--s3);background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s3) var(--s4);margin-bottom:var(--s5)}
 .who img,.who .ph{width:36px;height:36px;border-radius:50%;background:var(--color-accent-soft);flex:none}
 .who .lbl{font-size:12px;color:var(--color-muted)}
@@ -75,15 +80,15 @@ button.cta[data-state="loading"] .spin{display:block}
 .done button.back:hover{border-color:#b9c9bd}
 .done button.back:focus-visible{outline:2px solid var(--color-focus);outline-offset:2px}
 .done button.back:active{transform:translateY(1px)}
-@media (min-width:600px){.head h1{font-size:26px}.wrap{padding-top:var(--s8)}}
+@media (min-width:600px){.hero h1{font-size:26px}.wrap{padding-top:var(--s8)}}
 @media (prefers-reduced-motion:reduce){*{transition-duration:0.01ms !important;animation-duration:0.01ms !important}button.cta .spin{animation:none;opacity:0.7}}
 </style>
 </head>
 <body>
 <main class="wrap" id="formview">
-<header class="head">
+<header class="hero">
 <h1>เปิด Ticket แจ้งเคส</h1>
-<p>กรอกสั้นๆ ไม่ถึงนาที ทีมงานจะรับเรื่องต่อทันที</p>
+<p>กรอกสั้นๆ ไม่ถึงนาที</p>
 </header>
 <div class="who" id="who">
 <div class="ph" id="avatar"></div>
