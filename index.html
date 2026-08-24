@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เปิด Ticket แจ้งเคส</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Hallmark - component: liff-ticket-form - v7 static GitHub Pages + fetch to GAS */
+:root {
+--color-paper:#eef3ef; --color-card:#ffffff; --color-ink:#17211c; --color-muted:#5f6d65;
+--color-line:#dbe4dd; --color-accent:#06c755; --color-accent-press:#05a847; --color-accent-ink:#037d38;
+--color-accent-soft:#e2f7ea; --color-danger:#cf3f42; --color-danger-soft:#fdeeee;
+--color-warn-ink:#9a5b07; --color-warn-soft:#fdf3e0; --color-focus:#0b6bcb;
+--font-ui:'Anuphan',-apple-system,'Noto Sans Thai',sans-serif;
+--s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px;
+--rad-s:10px; --rad-m:14px; --dur:140ms; --ease-out:cubic-bezier(0.2,0.8,0.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-ui);background:var(--color-paper);color:var(--color-ink);line-height:1.5;padding-bottom:calc(var(--s6) + env(safe-area-inset-bottom))}
+.wrap{max-width:480px;margin:0 auto;padding:var(--s5) var(--s4)}
+.head{padding:var(--s2) 0 var(--s5)}
+.head h1{font-size:24px;font-weight:700;font-style:normal;letter-spacing:-0.01em;overflow-wrap:anywhere;min-width:0}
+.head p{color:var(--color-muted);font-size:14px;margin-top:2px}
+.who{display:flex;align-items:center;gap:var(--s3);background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s3) var(--s4);margin-bottom:var(--s5)}
+.who img,.who .ph{width:36px;height:36px;border-radius:50%;background:var(--color-accent-soft);flex:none}
+.who .lbl{font-size:12px;color:var(--color-muted)}
+.who .name{font-size:15px;font-weight:600;overflow-wrap:anywhere}
+fieldset{border:0;margin-bottom:var(--s6);min-width:0}
+legend,label.top{display:block;font-size:14px;font-weight:600;margin-bottom:var(--s2)}
+legend .opt,label.top .opt{color:var(--color-muted);font-weight:400;font-size:13px}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.chips.tri{grid-template-columns:repeat(3,minmax(0,1fr))}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;pointer-events:none}
+.chip span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:var(--s2) var(--s3);background:var(--color-card);border:1.5px solid var(--color-line);border-radius:var(--rad-s);font-size:14px;font-weight:500;color:var(--color-ink);text-align:center;cursor:pointer;transition:border-color var(--dur) var(--ease-out),background var(--dur) var(--ease-out);-webkit-tap-highlight-color:transparent}
+.chip:hover span{border-color:#b9c9bd}
+.chip input:focus-visible + span{outline:2px solid var(--color-focus);outline-offset:2px}
+.chip input:checked + span{border-color:var(--color-accent);background:var(--color-accent-soft);color:var(--color-accent-ink);font-weight:600}
+.chip input:checked + span.warn{border-color:var(--color-warn-ink);background:var(--color-warn-soft);color:var(--color-warn-ink)}
+.chip input:checked + span.hot{border-color:var(--color-danger);background:var(--color-danger-soft);color:var(--color-danger)}
+.chip:active span{transform:scale(0.98)}
+textarea,input[type=text]{width:100%;font:inherit;font-size:16px;color:var(--color-ink);background:var(--color-card);border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s3) var(--s4);transition:border-color var(--dur) var(--ease-out)}
+textarea{resize:vertical;min-height:104px}
+textarea::placeholder,input::placeholder{color:#9aa7a0}
+textarea:hover,input[type=text]:hover{border-color:#b9c9bd}
+textarea:focus-visible,input[type=text]:focus-visible{outline:2px solid var(--color-focus);outline-offset:1px;border-color:var(--color-focus)}
+.field-error textarea{border-color:var(--color-danger)}
+.err-note{display:none;color:var(--color-danger);font-size:13px;margin-top:var(--s1)}
+.field-error .err-note{display:block}
+.bar{margin-top:var(--s2)}
+button.cta{width:100%;min-height:52px;border:0;border-radius:var(--rad-m);background:var(--color-accent);color:#fff;font:inherit;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:var(--s2);transition:background var(--dur) var(--ease-out),transform var(--dur) var(--ease-out);-webkit-tap-highlight-color:transparent}
+button.cta:hover{background:var(--color-accent-press)}
+button.cta:focus-visible{outline:2px solid var(--color-focus);outline-offset:2px}
+button.cta:active{transform:translateY(1px)}
+button.cta:disabled{opacity:0.55;cursor:default}
+button.cta .spin{width:18px;height:18px;border-radius:50%;flex:none;border:2.5px solid rgba(255,255,255,0.4);border-top-color:#fff;animation:rot 0.7s linear infinite;display:none}
+button.cta[data-state="loading"] .spin{display:block}
+@keyframes rot{to{transform:rotate(360deg)}}
+.form-err{display:none;margin-top:var(--s2);text-align:center;color:var(--color-danger);font-size:13px}
+.form-err.show{display:block}
+.done{display:none;text-align:center;padding-top:10vh}
+.done.show{display:block}
+.done .ok{width:64px;height:64px;margin:0 auto var(--s4);border-radius:50%;background:var(--color-accent-soft);display:flex;align-items:center;justify-content:center}
+.done .ok svg{width:30px;height:30px;stroke:var(--color-accent-ink)}
+.done h2{font-size:20px;font-weight:700}
+.done .no{font-size:40px;font-weight:700;letter-spacing:0.01em;color:var(--color-accent-ink);margin:var(--s2) 0 var(--s4)}
+.done .hint{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4);font-size:14px;color:var(--color-muted);text-align:left;max-width:340px;margin:0 auto var(--s6)}
+.done button.back{font:inherit;font-size:15px;font-weight:600;cursor:pointer;background:var(--color-card);color:var(--color-ink);border:1.5px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s3) var(--s8);min-height:48px;transition:border-color var(--dur) var(--ease-out)}
+.done button.back:hover{border-color:#b9c9bd}
+.done button.back:focus-visible{outline:2px solid var(--color-focus);outline-offset:2px}
+.done button.back:active{transform:translateY(1px)}
+@media (min-width:600px){.head h1{font-size:26px}.wrap{padding-top:var(--s8)}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0.01ms !important;animation-duration:0.01ms !important}button.cta .spin{animation:none;opacity:0.7}}
+</style>
+</head>
+<body>
+<main class="wrap" id="formview">
+<header class="head">
+<h1>เปิด Ticket แจ้งเคส</h1>
+<p>กรอกสั้นๆ ไม่ถึงนาที ทีมงานจะรับเรื่องต่อทันที</p>
+</header>
+<div class="who" id="who">
+<div class="ph" id="avatar"></div>
+<div>
+<div class="lbl">ผู้แจ้ง</div>
+<div class="name" id="whoname">กำลังเชื่อมต่อ LINE...</div>
+</div>
+</div>
+<fieldset>
+<legend>ประเภทเคส</legend>
+<div class="chips">
+<label class="chip"><input type="radio" name="category" value="แจ้งปัญหา / ของเสีย" checked><span>แจ้งปัญหา / ของเสีย</span></label>
+<label class="chip"><input type="radio" name="category" value="สอบถาม"><span>สอบถาม</span></label>
+<label class="chip"><input type="radio" name="category" value="ร้องเรียน"><span>ร้องเรียน</span></label>
+<label class="chip"><input type="radio" name="category" value="อื่นๆ"><span>อื่นๆ</span></label>
+</div>
+</fieldset>
+<fieldset>
+<legend>ความเร่งด่วน</legend>
+<div class="chips tri">
+<label class="chip"><input type="radio" name="urgency" value="ต่ำ"><span>ต่ำ</span></label>
+<label class="chip"><input type="radio" name="urgency" value="กลาง" checked><span class="warn">กลาง</span></label>
+<label class="chip"><input type="radio" name="urgency" value="สูง"><span class="hot">สูง</span></label>
+</div>
+</fieldset>
+<fieldset id="f-detail">
+<label class="top" for="detail">รายละเอียด</label>
+<textarea id="detail" rows="4" placeholder="เกิดอะไรขึ้น ที่ไหน อย่างไร"></textarea>
+<div class="err-note">กรอกรายละเอียดก่อนเปิด ticket</div>
+</fieldset>
+<fieldset>
+<label class="top" for="location">สถานที่ / จุดที่พบ <span class="opt">(ไม่บังคับ)</span></label>
+<input type="text" id="location" placeholder="เช่น อาคาร A ชั้น 3">
+</fieldset>
+<div class="bar" id="bar">
+<button class="cta" id="submit" type="button"><span class="spin" aria-hidden="true"></span><span id="btntext">เปิด Ticket</span></button>
+<div class="form-err" id="formerr"></div>
+</div>
+</main>
+<main class="wrap done" id="doneview">
+<div class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
+<h2>เปิด Ticket สำเร็จ</h2>
+<div class="no" id="ticketno">T-0000</div>
+<div class="hint">พิมพ์รายละเอียดหรือส่งรูปเพิ่มในแชทได้เลย ระบบจะแนบเข้า ticket นี้ให้อัตโนมัติจนกว่าเคสจะปิด</div>
+<button class="back" type="button" onclick="liff.closeWindow()">กลับไปที่แชท</button>
+</main>
+<script>
+var LIFF_ID = '2011233926-Y5v2XxWX';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbzj-m1zfMEMrPHb8N0SreOr8yxLM28CNuR3CbVtx5eucMOvcQTJH6Tdl-Z7fnsfqnTx/exec';
+var uid = null;
+var uname = '';
+
+liff.init({ liffId: LIFF_ID }).then(function () {
+  if (!liff.isLoggedIn()) { liff.login(); return; }
+  var ctx = liff.getContext();
+  if (ctx && ctx.userId) {
+    uid = ctx.userId;
+    document.getElementById('whoname').textContent = 'พร้อมแจ้งเคสได้เลย';
+  }
+  return liff.getProfile().then(function (p) {
+    uid = p.userId;
+    uname = p.displayName;
+    document.getElementById('whoname').textContent = p.displayName;
+    if (p.pictureUrl) {
+      var img = document.createElement('img');
+      img.src = p.pictureUrl; img.alt = '';
+      document.getElementById('avatar').replaceWith(img);
+    }
+  });
+}).catch(function (e) {
+  if (!uid) { showErr('โหลด LIFF ไม่สำเร็จ ลองปิดแล้วเปิดใหม่อีกครั้ง'); }
+});
+
+function val(name) {
+  var el = document.querySelector('input[name="' + name + '"]:checked');
+  return el ? el.value : '';
+}
+function showErr(msg) {
+  var el = document.getElementById('formerr');
+  el.textContent = msg; el.classList.add('show');
+}
+
+document.getElementById('detail').addEventListener('input', function () {
+  document.getElementById('f-detail').classList.remove('field-error');
+});
+
+document.getElementById('submit').addEventListener('click', function () {
+  var btn = this;
+  var detail = document.getElementById('detail').value.trim();
+  document.getElementById('formerr').classList.remove('show');
+  if (!uid) { showErr('กำลังเชื่อมต่อ LINE รอสักครู่แล้วกดอีกครั้ง'); return; }
+  if (!detail) {
+    document.getElementById('f-detail').classList.add('field-error');
+    document.getElementById('detail').focus();
+    return;
+  }
+  btn.disabled = true;
+  btn.dataset.state = 'loading';
+  document.getElementById('btntext').textContent = 'กำลังเปิด Ticket...';
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action: 'openTicket',
+      userId: uid,
+      displayName: uname || '-',
+      category: val('category'),
+      detail: detail,
+      location: document.getElementById('location').value.trim(),
+      urgency: val('urgency')
+    })
+  }).then(function (r) { return r.json(); }).then(function (res) {
+    if (!res.ok) { throw new Error(res.error || 'server error'); }
+    document.getElementById('ticketno').textContent = res.no;
+    document.getElementById('formview').style.display = 'none';
+    document.getElementById('doneview').classList.add('show');
+    window.scrollTo(0, 0);
+  }).catch(function (e) {
+    btn.disabled = false;
+    delete btn.dataset.state;
+    document.getElementById('btntext').textContent = 'เปิด Ticket';
+    showErr('ผิดพลาด: ' + (e && e.message ? e.message : e));
+  });
+});
+</script>
+</body>
+</html>
