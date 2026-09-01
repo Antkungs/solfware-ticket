@@ -49,6 +49,12 @@ h1{font-size:22px;font-weight:700;margin-bottom:var(--s1)}
 .back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font:inherit;font-size:14px;font-weight:600;color:var(--color-accent-ink);cursor:pointer;margin-bottom:var(--s3);padding:var(--s2) 0}
 .dcard{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4);margin-bottom:var(--s4)}
 .dcard .row1{margin-bottom:var(--s3)}
+.tk-lbl{font-size:12px;color:var(--color-muted);font-weight:600}
+.tk-no{font-size:28px;font-weight:700;letter-spacing:0.01em;margin:2px 0 var(--s3)}
+.curstat{background:#f4f9ff;border-color:#cfe0f2}
+.curstat .badge{font-size:14px;padding:5px 14px}
+.stat-desc{font-size:14px}
+.stat-upd{font-size:12px;color:var(--color-muted);margin-top:var(--s1)}
 .kv{display:grid;grid-template-columns:96px 1fr;gap:var(--s1) var(--s3);font-size:14px}
 .kv dt{color:var(--color-muted)}
 .kv dd{overflow-wrap:anywhere}
@@ -74,7 +80,8 @@ h1{font-size:22px;font-weight:700;margin-bottom:var(--s1)}
 <main class="wrap" id="detailview">
 <button class="back" type="button" onclick="showList()">&larr; กลับไปหน้ารายการ</button>
 <div class="dcard">
-<div class="row1"><span class="no" id="d-no"></span><span class="badge" id="d-badge"></span></div>
+<div class="tk-lbl">Ticket No.</div>
+<div class="tk-no" id="d-no"></div>
 <dl class="kv">
 <dt>ประเภท</dt><dd id="d-cat"></dd>
 <dt>รายละเอียด</dt><dd id="d-detail"></dd>
@@ -84,10 +91,17 @@ h1{font-size:22px;font-weight:700;margin-bottom:var(--s1)}
 <dt>ปิดเมื่อ</dt><dd id="d-close"></dd>
 </dl>
 </div>
+<div class="dcard curstat">
+<div class="tk-lbl">สถานะปัจจุบัน</div>
+<div id="d-badge-wrap" style="margin:6px 0 4px"><span class="badge" id="d-badge"></span></div>
+<div class="stat-desc" id="d-statdesc"></div>
+<div class="stat-upd" id="d-statupd"></div>
+</div>
 <div class="dcard">
 <div class="tl-head">ความเคลื่อนไหว</div>
 <ul class="tl" id="d-tl"></ul>
 </div>
+<button class="newbtn" type="button" onclick="showList()" style="background:var(--color-card);color:var(--color-ink);border:1.5px solid var(--color-line)">กลับหน้าหลัก</button>
 </main>
 <script>
 var LIFF_ID = '2011233926-Y5v2XxWX';
@@ -150,9 +164,20 @@ function showList() {
   window.scrollTo(0, 0);
 }
 
+var ST_DESC = {
+  'รอรับเรื่อง': 'ระบบได้รับเรื่องของคุณแล้ว รอเจ้าหน้าที่รับเรื่อง',
+  'รับเรื่องแล้ว': 'เจ้าหน้าที่ได้รับเรื่องแล้ว และกำลังตรวจสอบ',
+  'กำลังดำเนินการ': 'เจ้าหน้าที่กำลังแก้ไขปัญหา',
+  'รอข้อมูลเพิ่มเติม': 'รอข้อมูลเพิ่มเติมจากผู้แจ้ง — ตอบกลับในแชทได้เลย',
+  'เสร็จสิ้น': 'ดำเนินการเสร็จสิ้นแล้ว',
+  'ปิดแล้ว': 'ปิดเคสเรียบร้อยแล้ว ขอบคุณที่แจ้งครับ'
+};
+
 function showDetail(t) {
   document.getElementById('d-no').textContent = t.no;
-  document.getElementById('d-badge').outerHTML = badge(t.status).replace('class="badge', 'id="d-badge" class="badge');
+  document.getElementById('d-badge-wrap').innerHTML = badge(t.status);
+  document.getElementById('d-statdesc').textContent = ST_DESC[t.status] || '';
+  document.getElementById('d-statupd').textContent = 'อัปเดตล่าสุด: ' + t.openedAt;
   document.getElementById('d-cat').textContent = t.category;
   document.getElementById('d-detail').textContent = t.detail;
   document.getElementById('d-loc').textContent = t.location || '-';
@@ -169,6 +194,9 @@ function showDetail(t) {
     .then(function (res) {
       if (!res.ok) throw new Error(res.error || 'server error');
       var items = [{ time: t.openedAt, kind: 'เปิดเคส', body: t.detail }].concat(res.updates);
+      if (items.length > 1) {
+        document.getElementById('d-statupd').textContent = 'อัปเดตล่าสุด: ' + items[items.length - 1].time;
+      }
       tl.innerHTML = items.map(function (u) {
         var body = /^https?:\/\//.test(u.body)
           ? '<a href="' + esc(u.body) + '" target="_blank" rel="noopener">เปิดดูรูป/ลิงก์</a>'
