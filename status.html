@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สถานะเคสของคุณ</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Hallmark - component: liff-ticket-status - เข้าชุดกับ index.html */
+:root {
+--color-paper:#eef3ef; --color-card:#ffffff; --color-ink:#17211c; --color-muted:#5f6d65;
+--color-line:#dbe4dd; --color-accent:#06c755; --color-accent-press:#05a847; --color-accent-ink:#037d38;
+--color-accent-soft:#e2f7ea; --color-danger:#cf3f42; --color-danger-soft:#fdeeee;
+--color-warn-ink:#9a5b07; --color-warn-soft:#fdf3e0; --color-focus:#0b6bcb;
+--color-info-ink:#0b5cab; --color-info-soft:#e7f1fb; --color-done-ink:#5b4a9e; --color-done-soft:#efeafd;
+--font-ui:'Anuphan',-apple-system,'Noto Sans Thai',sans-serif;
+--s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px;
+--rad-s:10px; --rad-m:14px; --dur:140ms; --ease-out:cubic-bezier(0.2,0.8,0.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+body{font-family:var(--font-ui);background:var(--color-paper);color:var(--color-ink);line-height:1.5;padding-bottom:calc(var(--s8) + env(safe-area-inset-bottom))}
+.wrap{max-width:480px;margin:0 auto;padding:var(--s5) var(--s4)}
+h1{font-size:22px;font-weight:700;margin-bottom:var(--s1)}
+.sub{color:var(--color-muted);font-size:14px;margin-bottom:var(--s5)}
+.card{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4);margin-bottom:var(--s3);cursor:pointer;transition:border-color var(--dur) var(--ease-out);-webkit-tap-highlight-color:transparent}
+.card:hover{border-color:#b9c9bd}
+.card:active{transform:scale(0.995)}
+.row1{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);margin-bottom:var(--s1)}
+.no{font-weight:700;font-size:16px}
+.badge{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.b-new{background:var(--color-warn-soft);color:var(--color-warn-ink)}
+.b-ack,.b-doing{background:var(--color-info-soft);color:var(--color-info-ink)}
+.b-wait{background:var(--color-danger-soft);color:var(--color-danger)}
+.b-done{background:var(--color-accent-soft);color:var(--color-accent-ink)}
+.b-closed{background:#eceff0;color:#5c686b}
+.meta{font-size:13px;color:var(--color-muted)}
+.cat{font-size:14px;margin-bottom:2px}
+.empty{background:var(--color-card);border:1px dashed var(--color-line);border-radius:var(--rad-m);padding:var(--s6);text-align:center;color:var(--color-muted);font-size:14px}
+.newbtn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:var(--s4);border:0;border-radius:var(--rad-m);background:var(--color-accent);color:#fff;font:inherit;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:background var(--dur) var(--ease-out)}
+.newbtn:hover{background:var(--color-accent-press)}
+.loading,.err{padding:var(--s6);text-align:center;color:var(--color-muted);font-size:14px}
+.err{color:var(--color-danger)}
+/* detail */
+#detailview{display:none}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font:inherit;font-size:14px;font-weight:600;color:var(--color-accent-ink);cursor:pointer;margin-bottom:var(--s3);padding:var(--s2) 0}
+.dcard{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4);margin-bottom:var(--s4)}
+.dcard .row1{margin-bottom:var(--s3)}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:var(--s1) var(--s3);font-size:14px}
+.kv dt{color:var(--color-muted)}
+.kv dd{overflow-wrap:anywhere}
+.tl-head{font-size:14px;font-weight:700;margin-bottom:var(--s2)}
+.tl{list-style:none}
+.tl li{position:relative;padding:0 0 var(--s4) var(--s5);border-left:2px solid var(--color-line);margin-left:7px}
+.tl li:last-child{padding-bottom:0}
+.tl li::before{content:'';position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--color-accent);border:2px solid var(--color-card)}
+.tl .t{font-size:12px;color:var(--color-muted)}
+.tl .k{font-size:13px;font-weight:600}
+.tl .b{font-size:14px;overflow-wrap:anywhere}
+.tl .b a{color:var(--color-focus)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0.01ms !important}}
+</style>
+</head>
+<body>
+<main class="wrap" id="listview">
+<h1>สถานะเคสของคุณ</h1>
+<p class="sub" id="whoname">กำลังเชื่อมต่อ LINE...</p>
+<div id="list"><div class="loading">กำลังโหลด...</div></div>
+<a class="newbtn" href="https://liff.line.me/2011233926-Y5v2XxWX">+ เปิด Ticket ใหม่</a>
+</main>
+<main class="wrap" id="detailview">
+<button class="back" type="button" onclick="showList()">&larr; กลับไปหน้ารายการ</button>
+<div class="dcard">
+<div class="row1"><span class="no" id="d-no"></span><span class="badge" id="d-badge"></span></div>
+<dl class="kv">
+<dt>ประเภท</dt><dd id="d-cat"></dd>
+<dt>รายละเอียด</dt><dd id="d-detail"></dd>
+<dt>สถานที่</dt><dd id="d-loc"></dd>
+<dt>ความเร่งด่วน</dt><dd id="d-urg"></dd>
+<dt>เปิดเมื่อ</dt><dd id="d-open"></dd>
+<dt>ปิดเมื่อ</dt><dd id="d-close"></dd>
+</dl>
+</div>
+<div class="dcard">
+<div class="tl-head">ความเคลื่อนไหว</div>
+<ul class="tl" id="d-tl"></ul>
+</div>
+</main>
+<script>
+var LIFF_ID = '2011233926-Y5v2XxWX';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbzj-m1zfMEMrPHb8N0SreOr8yxLM28CNuR3CbVtx5eucMOvcQTJH6Tdl-Z7fnsfqnTx/exec';
+var uid = null;
+var tickets = [];
+
+var BADGE = {
+  'รอรับเรื่อง': 'b-new', 'รับเรื่องแล้ว': 'b-ack', 'กำลังดำเนินการ': 'b-doing',
+  'รอข้อมูลเพิ่มเติม': 'b-wait', 'เสร็จสิ้น': 'b-done', 'ปิดแล้ว': 'b-closed'
+};
+
+liff.init({ liffId: LIFF_ID }).then(function () {
+  if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+  return liff.getProfile().then(function (p) {
+    uid = p.userId;
+    document.getElementById('whoname').textContent = 'ของ ' + p.displayName;
+    loadList();
+  });
+}).catch(function () {
+  document.getElementById('list').innerHTML = '<div class="err">โหลด LIFF ไม่สำเร็จ ลองปิดแล้วเปิดใหม่อีกครั้ง</div>';
+});
+
+function esc(s) {
+  return ('' + (s == null ? '' : s)).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function badge(st) { return '<span class="badge ' + (BADGE[st] || 'b-closed') + '">' + esc(st) + '</span>'; }
+
+function loadList() {
+  fetch(GAS_URL + '?api=myTickets&uid=' + encodeURIComponent(uid))
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      tickets = res.tickets;
+      var el = document.getElementById('list');
+      if (!tickets.length) {
+        el.innerHTML = '<div class="empty">ยังไม่มีเคสของคุณในระบบ<br>กดปุ่มด้านล่างเพื่อเปิด Ticket แรกได้เลย</div>';
+        return;
+      }
+      el.innerHTML = tickets.map(function (t, i) {
+        return '<div class="card" data-i="' + i + '" role="button" tabindex="0">' +
+          '<div class="row1"><span class="no">' + esc(t.no) + '</span>' + badge(t.status) + '</div>' +
+          '<div class="cat">' + esc(t.category) + ' · ' + esc(t.detail).slice(0, 60) + '</div>' +
+          '<div class="meta">เปิดเมื่อ ' + esc(t.openedAt) + ' · เร่งด่วน: ' + esc(t.urgency) + '</div></div>';
+      }).join('');
+      [].forEach.call(el.querySelectorAll('.card'), function (c) {
+        c.addEventListener('click', function () { showDetail(tickets[Number(c.dataset.i)]); });
+      });
+    })
+    .catch(function (e) {
+      document.getElementById('list').innerHTML = '<div class="err">โหลดข้อมูลไม่สำเร็จ: ' + esc(e.message || e) + '</div>';
+    });
+}
+
+function showList() {
+  document.getElementById('detailview').style.display = 'none';
+  document.getElementById('listview').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function showDetail(t) {
+  document.getElementById('d-no').textContent = t.no;
+  document.getElementById('d-badge').outerHTML = badge(t.status).replace('class="badge', 'id="d-badge" class="badge');
+  document.getElementById('d-cat').textContent = t.category;
+  document.getElementById('d-detail').textContent = t.detail;
+  document.getElementById('d-loc').textContent = t.location || '-';
+  document.getElementById('d-urg').textContent = t.urgency;
+  document.getElementById('d-open').textContent = t.openedAt;
+  document.getElementById('d-close').textContent = t.closedAt || '-';
+  var tl = document.getElementById('d-tl');
+  tl.innerHTML = '<li><span class="t">กำลังโหลด...</span></li>';
+  document.getElementById('listview').style.display = 'none';
+  document.getElementById('detailview').style.display = 'block';
+  window.scrollTo(0, 0);
+  fetch(GAS_URL + '?api=ticketDetail&uid=' + encodeURIComponent(uid) + '&no=' + encodeURIComponent(t.no))
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      var items = [{ time: t.openedAt, kind: 'เปิดเคส', body: t.detail }].concat(res.updates);
+      tl.innerHTML = items.map(function (u) {
+        var body = /^https?:\/\//.test(u.body)
+          ? '<a href="' + esc(u.body) + '" target="_blank" rel="noopener">เปิดดูรูป/ลิงก์</a>'
+          : esc(u.body);
+        return '<li><div class="t">' + esc(u.time) + '</div><div class="k">' + esc(u.kind) + '</div><div class="b">' + body + '</div></li>';
+      }).join('');
+    })
+    .catch(function (e) {
+      tl.innerHTML = '<li><span class="t" style="color:var(--color-danger)">โหลดไม่สำเร็จ: ' + esc(e.message || e) + '</span></li>';
+    });
+}
+</script>
+</body>
+</html>
