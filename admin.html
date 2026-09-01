@@ -3,74 +3,112 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IT Ticket — จัดการเคส</title>
+<title>IT Ticket System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Hallmark - component: it-ticket-admin - เข้าชุด palette เดียวกับฝั่งผู้ใช้ */
+/* Hallmark - component: it-ticket-admin v2 - layout ตาม mockup ในเอกสาร LINE OA IT Support (FLOW 2) */
 :root {
---color-paper:#eef3ef; --color-card:#ffffff; --color-ink:#17211c; --color-muted:#5f6d65;
+--color-paper:#f2f5f3; --color-card:#ffffff; --color-ink:#17211c; --color-muted:#5f6d65;
 --color-line:#dbe4dd; --color-accent:#06c755; --color-accent-press:#05a847; --color-accent-ink:#037d38;
 --color-accent-soft:#e2f7ea; --color-danger:#cf3f42; --color-danger-soft:#fdeeee;
 --color-warn-ink:#9a5b07; --color-warn-soft:#fdf3e0; --color-focus:#0b6bcb;
 --color-info-ink:#0b5cab; --color-info-soft:#e7f1fb;
+--color-side:#0f2b1c; --color-side-ink:#cfe5d6; --color-side-active:#1b4630;
 --font-ui:'Anuphan',-apple-system,'Noto Sans Thai',sans-serif;
 --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px;
 --rad-s:10px; --rad-m:14px; --dur:140ms; --ease-out:cubic-bezier(0.2,0.8,0.3,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-ui);background:var(--color-paper);color:var(--color-ink);line-height:1.5}
-.wrap{max-width:1080px;margin:0 auto;padding:var(--s5) var(--s4) var(--s6)}
-h1{font-size:20px;font-weight:700}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s4);flex-wrap:wrap}
-.topbar .r{display:flex;gap:var(--s2);align-items:center}
-button,select,input{font:inherit}
-.btn{min-height:40px;padding:0 var(--s4);border:1.5px solid var(--color-line);border-radius:var(--rad-s);background:var(--color-card);color:var(--color-ink);font-size:14px;font-weight:600;cursor:pointer;transition:border-color var(--dur) var(--ease-out)}
+button,select,input,textarea{font:inherit}
+svg.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* ===== login (ตาม mockup: กล่องกลางจอ หัวเขียว) ===== */
+#login{max-width:380px;margin:12vh auto 0;background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s6);text-align:center}
+#login .logo{font-size:22px;font-weight:700;color:var(--color-accent-ink);letter-spacing:0.02em}
+#login .sub{color:var(--color-muted);font-size:14px;margin:var(--s1) 0 var(--s5)}
+#login input{width:100%;font-size:16px;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s3) var(--s4);margin-bottom:var(--s3);text-align:center}
+#login input:focus-visible{outline:2px solid var(--color-focus);outline-offset:1px}
+#login .err{color:var(--color-danger);font-size:13px;margin-top:var(--s2);display:none}
+.btn{min-height:40px;padding:0 var(--s4);border:1.5px solid var(--color-line);border-radius:var(--rad-s);background:var(--color-card);color:var(--color-ink);font-size:14px;font-weight:600;cursor:pointer;transition:border-color var(--dur) var(--ease-out),background var(--dur) var(--ease-out);display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:hover{border-color:#b9c9bd}
 .btn.primary{background:var(--color-accent);border-color:var(--color-accent);color:#fff}
 .btn.primary:hover{background:var(--color-accent-press)}
 .btn:disabled{opacity:0.55;cursor:default}
-/* login */
-#login{max-width:360px;margin:14vh auto 0;background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s6);text-align:center}
-#login h1{margin-bottom:var(--s2)}
-#login p{color:var(--color-muted);font-size:14px;margin-bottom:var(--s4)}
-#login input{width:100%;font-size:16px;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s3) var(--s4);margin-bottom:var(--s3);text-align:center}
-#login .err{color:var(--color-danger);font-size:13px;margin-top:var(--s2);display:none}
-/* filter */
-.filters{display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s3)}
-.fchip{border:1.5px solid var(--color-line);background:var(--color-card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--color-muted)}
-.fchip.on{border-color:var(--color-accent);background:var(--color-accent-soft);color:var(--color-accent-ink)}
-#search{flex:1;min-width:180px;border:1.5px solid var(--color-line);border-radius:999px;padding:6px 16px;font-size:14px}
-/* layout */
-#app{display:none}
-.cols{display:grid;grid-template-columns:1fr;gap:var(--s4)}
-@media(min-width:880px){.cols{grid-template-columns:minmax(380px,1fr) minmax(380px,1fr);align-items:start}}
-/* list */
-.tcard{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s3) var(--s4);margin-bottom:var(--s2);cursor:pointer;transition:border-color var(--dur) var(--ease-out)}
-.tcard:hover{border-color:#b9c9bd}
-.tcard.sel{border-color:var(--color-accent);box-shadow:0 0 0 1px var(--color-accent)}
-.row1{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
-.no{font-weight:700;font-size:15px}
-.badge{font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;white-space:nowrap}
+/* ===== app shell: sidebar + content ===== */
+#app{display:none;min-height:100vh}
+#app.on{display:flex}
+.side{width:216px;flex:none;background:var(--color-side);color:var(--color-side-ink);display:flex;flex-direction:column;padding:var(--s5) var(--s3);position:sticky;top:0;height:100vh}
+.side .logo{color:#fff;font-weight:700;font-size:16px;letter-spacing:0.03em;padding:0 var(--s3);margin-bottom:var(--s6)}
+.side .logo small{display:block;font-weight:500;font-size:11px;color:var(--color-side-ink);letter-spacing:0.08em}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:var(--s3);width:100%;text-align:left;background:none;border:0;color:var(--color-side-ink);font-size:14px;font-weight:600;padding:var(--s3);border-radius:var(--rad-s);cursor:pointer;transition:background var(--dur) var(--ease-out)}
+.nav button:hover{background:rgba(255,255,255,0.07)}
+.nav button.on{background:var(--color-side-active);color:#fff}
+.side .foot{margin-top:auto;display:flex;flex-direction:column;gap:2px}
+.content{flex:1;min-width:0;padding:var(--s5) var(--s6) var(--s6)}
+.pagehead{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s4);flex-wrap:wrap}
+.pagehead h1{font-size:20px;font-weight:700}
+/* ===== dashboard stat cards (ตาม mockup FLOW 3) ===== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s3);margin-bottom:var(--s4)}
+.stat{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4)}
+.stat .lbl{font-size:13px;color:var(--color-muted)}
+.stat .num{font-size:30px;font-weight:700;line-height:1.2}
+.stat.t-new .num{color:var(--color-warn-ink)}
+.stat.t-doing .num{color:var(--color-info-ink)}
+.stat.t-done .num{color:var(--color-accent-ink)}
+.stat.t-closed .num{color:#5c686b}
+/* ===== filter bar ===== */
+.fbar{display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap;margin-bottom:var(--s3)}
+.fbar select{border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:8px var(--s3);font-size:14px;background:var(--color-card)}
+.fbar input{flex:1;min-width:200px;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:8px var(--s4);font-size:14px}
+/* ===== ticket table (ตาราง ตาม mockup) ===== */
+.tablewrap{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
+th{background:#f4f7f5;color:var(--color-muted);font-size:12px;font-weight:700;text-align:left;padding:var(--s3) var(--s4);border-bottom:1px solid var(--color-line);white-space:nowrap}
+td{padding:var(--s3) var(--s4);border-bottom:1px solid var(--color-line);vertical-align:middle}
+tbody tr{cursor:pointer;transition:background var(--dur) var(--ease-out)}
+tbody tr:hover{background:#f6faf7}
+tbody tr.sel{background:var(--color-accent-soft)}
+tbody tr:last-child td{border-bottom:0}
+td.no{font-weight:700;white-space:nowrap}
+td.subject{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td.when{color:var(--color-muted);font-size:13px;white-space:nowrap}
+.count{color:var(--color-muted);font-size:13px;margin-top:var(--s2)}
+.badge{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;white-space:nowrap}
 .b-new{background:var(--color-warn-soft);color:var(--color-warn-ink)}
 .b-ack,.b-doing{background:var(--color-info-soft);color:var(--color-info-ink)}
 .b-wait{background:var(--color-danger-soft);color:var(--color-danger)}
 .b-done{background:var(--color-accent-soft);color:var(--color-accent-ink)}
 .b-closed{background:#eceff0;color:#5c686b}
-.meta{font-size:12px;color:var(--color-muted)}
-.sum{font-size:13px;margin:2px 0;overflow-wrap:anywhere}
-.urg-สูง{color:var(--color-danger);font-weight:700}
-.urg-กลาง{color:var(--color-warn-ink)}
-.empty,.loading{padding:var(--s6);text-align:center;color:var(--color-muted);font-size:14px;background:var(--color-card);border:1px dashed var(--color-line);border-radius:var(--rad-m)}
-/* detail */
-.dcard{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4);margin-bottom:var(--s3)}
-.kv{display:grid;grid-template-columns:110px 1fr;gap:var(--s1) var(--s3);font-size:14px;margin-top:var(--s3)}
+.u-สูง{background:var(--color-danger-soft);color:var(--color-danger)}
+.u-กลาง{background:var(--color-warn-soft);color:var(--color-warn-ink)}
+.u-ต่ำ{background:var(--color-accent-soft);color:var(--color-accent-ink)}
+.empty,.loading{padding:var(--s6);text-align:center;color:var(--color-muted);font-size:14px}
+/* ===== detail (ตาม mockup: การ์ดข้อมูล + workflow + note + ส่ง LINE) ===== */
+#detailview{display:none}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font-size:14px;font-weight:600;color:var(--color-accent-ink);cursor:pointer;margin-bottom:var(--s3);padding:var(--s2) 0}
+.dgrid{display:grid;grid-template-columns:1fr;gap:var(--s4);align-items:start}
+@media(min-width:980px){.dgrid{grid-template-columns:minmax(360px,1fr) minmax(360px,1fr)}}
+.dcard{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--rad-m);padding:var(--s4)}
+.dcard h2{font-size:15px;font-weight:700;margin-bottom:var(--s3)}
+.dhead{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);margin-bottom:var(--s3)}
+.dhead .tk{font-size:20px;font-weight:700}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:var(--s2) var(--s3);font-size:14px}
 .kv dt{color:var(--color-muted)}
 .kv dd{overflow-wrap:anywhere}
+.locpill{display:inline-flex;align-items:center;gap:6px;background:var(--color-accent-soft);color:var(--color-accent-ink);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600}
+/* workflow chips (รอรับเรื่อง → ... → ปิดเคส) */
+.flow{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin-bottom:var(--s3)}
+.step{border:1.5px solid var(--color-line);background:var(--color-card);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--color-muted);cursor:pointer;transition:all var(--dur) var(--ease-out)}
+.step:hover{border-color:#b9c9bd}
+.step.cur{border-color:var(--color-accent);background:var(--color-accent-soft);color:var(--color-accent-ink)}
+.step.pick{border-color:var(--color-focus);background:var(--color-info-soft);color:var(--color-info-ink)}
+.arrow{color:#b9c9bd;font-size:13px}
 .field{margin-bottom:var(--s3)}
 .field label{display:block;font-size:13px;font-weight:600;margin-bottom:var(--s1)}
-.field select,.field input[type=text],.field textarea{width:100%;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s2) var(--s3);font-size:14px}
+.field input[type=text],.field textarea{width:100%;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s2) var(--s3);font-size:14px}
 .field textarea{resize:vertical;min-height:64px}
 .chk{display:flex;align-items:center;gap:var(--s2);font-size:14px;margin-bottom:var(--s3)}
 .msg{font-size:13px;margin-top:var(--s2);display:none}
@@ -86,15 +124,28 @@ button,select,input{font:inherit}
 .tl .b{font-size:13px;overflow-wrap:anywhere}
 .tl .b a{color:var(--color-focus)}
 .hint{color:var(--color-muted);font-size:13px}
+/* key panel */
+#chkeypanel{display:none;max-width:420px;margin-bottom:var(--s4)}
+/* mobile: sidebar เป็นแถบบน */
+@media(max-width:760px){
+#app.on{flex-direction:column}
+.side{width:100%;height:auto;position:static;flex-direction:row;align-items:center;padding:var(--s3);gap:var(--s2)}
+.side .logo{margin:0 var(--s2) 0 0;font-size:14px}
+.side .logo small{display:none}
+.nav{flex-direction:row}
+.side .foot{margin:0 0 0 auto;flex-direction:row}
+.nav button span.txt{display:none}
+.content{padding:var(--s4)}
+}
 </style>
 </head>
 <body>
 <div id="login">
-<h1>IT Ticket — จัดการเคส</h1>
-<p id="loginhint">ใส่รหัสทีม IT เพื่อเข้าระบบ</p>
+<div class="logo">IT TICKET SYSTEM</div>
+<p class="sub" id="loginhint">เข้าสู่ระบบด้วยรหัสทีม IT</p>
 <div id="loginform">
 <input type="password" id="pin" placeholder="รหัสทีม" autocomplete="current-password">
-<button class="btn primary" style="width:100%" id="loginbtn">เข้าระบบ</button>
+<button class="btn primary" style="width:100%" id="loginbtn">Login</button>
 </div>
 <div id="setupform" style="display:none">
 <input type="password" id="newpin" placeholder="ตั้งรหัสทีม (อย่างน้อย 6 ตัวอักษร)" autocomplete="new-password">
@@ -104,35 +155,95 @@ button,select,input{font:inherit}
 <div class="err" id="loginerr"></div>
 </div>
 
-<div class="wrap" id="app">
-<div class="topbar">
-<h1>IT Ticket — จัดการเคส</h1>
-<div class="r">
-<button class="btn" id="refresh">รีเฟรช</button>
-<button class="btn" id="chkey">เปลี่ยนรหัสทีม</button>
-<button class="btn" id="logout">ออกจากระบบ</button>
+<div id="app">
+<aside class="side">
+<div class="logo">IT TICKET SYSTEM<small>แจ้งเคส Solfware</small></div>
+<nav class="nav">
+<button id="nav-dash" class="on"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="txt">Dashboard</span></button>
+<button id="nav-ticket"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/><path d="M13 5v14" stroke-dasharray="2 3"/></svg><span class="txt">Ticket</span></button>
+</nav>
+<div class="foot">
+<nav class="nav">
+<button id="chkey2"><svg class="ic" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12 20 3M16 7l3 3"/></svg><span class="txt">เปลี่ยนรหัสทีม</span></button>
+<button id="logout"><svg class="ic" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span class="txt">ออกจากระบบ</span></button>
+</nav>
 </div>
-</div>
-<div class="dcard" id="chkeypanel" style="display:none;max-width:420px">
-<div class="field"><label for="ck-old">รหัสเดิม</label><input type="password" id="ck-old" autocomplete="current-password"></div>
-<div class="field"><label for="ck-new">รหัสใหม่ (อย่างน้อย 6 ตัวอักษร)</label><input type="password" id="ck-new" autocomplete="new-password"></div>
+</aside>
+
+<main class="content">
+<div class="dcard" id="chkeypanel">
+<h2>เปลี่ยนรหัสทีม</h2>
+<div class="field"><label for="ck-old">รหัสเดิม</label><input type="password" id="ck-old" autocomplete="current-password" style="width:100%;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s2) var(--s3)"></div>
+<div class="field"><label for="ck-new">รหัสใหม่ (อย่างน้อย 6 ตัวอักษร)</label><input type="password" id="ck-new" autocomplete="new-password" style="width:100%;border:1.5px solid var(--color-line);border-radius:var(--rad-s);padding:var(--s2) var(--s3)"></div>
 <button class="btn primary" id="ck-save">เปลี่ยนรหัส</button>
 <span class="msg" id="ck-msg" style="margin-left:8px"></span>
 </div>
-<div class="filters" id="filters">
-<button class="fchip on" data-f="เปิดอยู่">เปิดอยู่</button>
-<button class="fchip" data-f="ทั้งหมด">ทั้งหมด</button>
-<button class="fchip" data-f="รอรับเรื่อง">รอรับเรื่อง</button>
-<button class="fchip" data-f="กำลังดำเนินการ">กำลังดำเนินการ</button>
-<button class="fchip" data-f="รอข้อมูลเพิ่มเติม">รอข้อมูลเพิ่มเติม</button>
-<button class="fchip" data-f="เสร็จสิ้น">เสร็จสิ้น</button>
-<button class="fchip" data-f="ปิดแล้ว">ปิดแล้ว</button>
-<input id="search" type="text" placeholder="ค้นหา เลขที่ / ชื่อ / รายละเอียด">
+
+<!-- ===== Dashboard ===== -->
+<section id="dashview">
+<div class="pagehead"><h1>Dashboard</h1><button class="btn" id="refresh1">รีเฟรช</button></div>
+<div class="stats" id="stats"></div>
+<div class="pagehead" style="margin-top:var(--s2)"><h1 style="font-size:16px">เคสล่าสุด</h1></div>
+<div class="tablewrap"><table id="recenttable">
+<thead><tr><th>Ticket No.</th><th>หัวข้อ</th><th>ผู้แจ้ง</th><th>ความเร่งด่วน</th><th>สถานะ</th><th>วันที่แจ้ง</th></tr></thead>
+<tbody></tbody></table><div class="loading" id="dashload">กำลังโหลด...</div></div>
+</section>
+
+<!-- ===== Ticket list ===== -->
+<section id="listview" style="display:none">
+<div class="pagehead"><h1>รายการ Ticket</h1><button class="btn" id="refresh2">รีเฟรช</button></div>
+<div class="fbar">
+<select id="fstatus">
+<option value="เปิดอยู่">สถานะ: เปิดอยู่</option>
+<option value="ทั้งหมด">สถานะ: ทั้งหมด</option>
+<option>รอรับเรื่อง</option><option>รับเรื่องแล้ว</option><option>กำลังดำเนินการ</option>
+<option>รอข้อมูลเพิ่มเติม</option><option>เสร็จสิ้น</option><option>ปิดแล้ว</option>
+</select>
+<input id="search" type="text" placeholder="ค้นหา Ticket No. / หัวข้อ / ผู้แจ้ง">
 </div>
-<div class="cols">
-<div id="list"><div class="loading">กำลังโหลด...</div></div>
-<div id="detail"><div class="empty">เลือกเคสจากรายการด้านซ้ายเพื่อดู/จัดการ</div></div>
+<div class="tablewrap"><table id="tickettable">
+<thead><tr><th>Ticket No.</th><th>หัวข้อ</th><th>ผู้แจ้ง</th><th>ความเร่งด่วน</th><th>สถานะ</th><th>วันที่แจ้ง</th></tr></thead>
+<tbody></tbody></table><div class="loading" id="listload" style="display:none">กำลังโหลด...</div><div class="empty" id="listempty" style="display:none">ไม่มีเคสตามเงื่อนไขนี้</div></div>
+<div class="count" id="listcount"></div>
+</section>
+
+<!-- ===== Ticket detail ===== -->
+<section id="detailview">
+<button class="back" type="button" id="backbtn">&larr; กลับไปรายการ Ticket</button>
+<div class="dgrid">
+<div>
+<div class="dcard" style="margin-bottom:var(--s4)">
+<div class="dhead"><span class="tk" id="d-no"></span><span id="d-badge"></span></div>
+<dl class="kv">
+<dt>ประเภท</dt><dd id="d-cat"></dd>
+<dt>ผู้แจ้ง</dt><dd id="d-name"></dd>
+<dt>ความเร่งด่วน (ผู้แจ้ง)</dt><dd id="d-urg"></dd>
+<dt>สถานที่</dt><dd id="d-loc"></dd>
+<dt>วันที่แจ้ง</dt><dd id="d-open"></dd>
+<dt>ปิดเมื่อ</dt><dd id="d-close"></dd>
+<dt>รายละเอียด</dt><dd id="d-detail"></dd>
+</dl>
 </div>
+<div class="dcard">
+<div class="dhead" style="margin-bottom:var(--s2)"><h2 style="margin:0">ความเคลื่อนไหว</h2><span class="hint">จุดเหลือง = ภายใน IT</span></div>
+<ul class="tl" id="tl"></ul>
+</div>
+</div>
+<div>
+<div class="dcard" style="margin-bottom:var(--s4)">
+<h2>จัดการสถานะ (Workflow)</h2>
+<div class="flow" id="flow"></div>
+<div class="field"><label for="f-assignee">ผู้รับผิดชอบ / โน้ตสั้น</label><input type="text" id="f-assignee"></div>
+<div class="field"><label for="f-note">Internal Note (ผู้แจ้งไม่เห็น)</label><textarea id="f-note" placeholder="บันทึกข้อมูลสำหรับทีมภายใน"></textarea></div>
+<div class="field"><label for="f-msg">ข้อความแจ้งผู้แจ้งผ่าน LINE (ไม่บังคับ)</label><textarea id="f-msg" placeholder="เช่น เจ้าหน้าที่กำลังเข้าไปตรวจสอบครับ"></textarea></div>
+<label class="chk"><input type="checkbox" id="f-notify" checked> ส่งแจ้งเตือนผู้แจ้งผ่าน LINE เมื่อบันทึก</label>
+<button class="btn primary" id="savebtn" style="width:100%">บันทึก</button>
+<div class="msg" id="savemsg"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
 </div>
 
 <script>
@@ -142,8 +253,9 @@ var OPEN_SET = ['รอรับเรื่อง', 'รับเรื่อ�
 var BADGE = { 'รอรับเรื่อง': 'b-new', 'รับเรื่องแล้ว': 'b-ack', 'กำลังดำเนินการ': 'b-doing', 'รอข้อมูลเพิ่มเติม': 'b-wait', 'เสร็จสิ้น': 'b-done', 'ปิดแล้ว': 'b-closed' };
 var key = null;
 var all = [];
-var filter = 'เปิดอยู่';
 var selNo = null;
+var pickStatus = null;
+var curTicket = null;
 
 function esc(s) {
   return ('' + (s == null ? '' : s)).replace(/[&<>"']/g, function (c) {
@@ -151,27 +263,28 @@ function esc(s) {
   });
 }
 function badge(st) { return '<span class="badge ' + (BADGE[st] || 'b-closed') + '">' + esc(st) + '</span>'; }
+function ubadge(u) { return '<span class="badge u-' + esc(u) + '">' + esc(u) + '</span>'; }
+function $(id) { return document.getElementById(id); }
 
-// ----- login -----
+// ----- login / first-run setup -----
 try { key = localStorage.getItem('itkey'); } catch (e) {}
 if (key) { enter(); }
 else {
-  // ยังไม่เคย login: เช็คว่าระบบตั้งรหัสหรือยัง ถ้ายัง → โชว์ฟอร์มตั้งรหัสครั้งแรกเลย
   fetch(GAS_URL + '?api=adminList&key=probe')
     .then(function (r) { return r.json(); })
     .then(function (res) { if (res && res.needSetup) showSetup(); })
     .catch(function () {});
 }
 
-document.getElementById('loginbtn').addEventListener('click', doLogin);
-document.getElementById('pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+$('loginbtn').addEventListener('click', doLogin);
+$('pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
 
 function doLogin() {
-  var pin = document.getElementById('pin').value.trim();
+  var pin = $('pin').value.trim();
   if (!pin) return;
-  var btn = document.getElementById('loginbtn');
+  var btn = $('loginbtn');
   btn.disabled = true; btn.textContent = 'กำลังตรวจ...';
-  document.getElementById('loginerr').style.display = 'none';
+  $('loginerr').style.display = 'none';
   fetch(GAS_URL + '?api=adminList&key=' + encodeURIComponent(pin))
     .then(function (r) { return r.json(); })
     .then(function (res) {
@@ -185,24 +298,23 @@ function doLogin() {
       enter(true);
     })
     .catch(function (e) {
-      var el = document.getElementById('loginerr');
+      var el = $('loginerr');
       el.textContent = '' + (e.message || e); el.style.display = 'block';
     })
-    .then(function () { btn.disabled = false; btn.textContent = 'เข้าระบบ'; });
+    .then(function () { btn.disabled = false; btn.textContent = 'Login'; });
 }
 
-// ----- ตั้งรหัสครั้งแรก (ระบบยังไม่มีรหัส) -----
 function showSetup() {
-  document.getElementById('loginform').style.display = 'none';
-  document.getElementById('setupform').style.display = 'block';
-  document.getElementById('loginhint').textContent = 'ระบบยังไม่มีรหัสทีม ตั้งรหัสครั้งแรกได้เลย';
-  document.getElementById('loginerr').style.display = 'none';
+  $('loginform').style.display = 'none';
+  $('setupform').style.display = 'block';
+  $('loginhint').textContent = 'ระบบยังไม่มีรหัสทีม ตั้งรหัสครั้งแรกได้เลย';
+  $('loginerr').style.display = 'none';
 }
 
-document.getElementById('setupbtn').addEventListener('click', function () {
-  var n1 = document.getElementById('newpin').value.trim();
-  var n2 = document.getElementById('newpin2').value.trim();
-  var el = document.getElementById('loginerr');
+$('setupbtn').addEventListener('click', function () {
+  var n1 = $('newpin').value.trim();
+  var n2 = $('newpin2').value.trim();
+  var el = $('loginerr');
   el.style.display = 'none';
   if (n1.length < 6) { el.textContent = 'รหัสต้องยาวอย่างน้อย 6 ตัวอักษร'; el.style.display = 'block'; return; }
   if (n1 !== n2) { el.textContent = 'รหัสสองช่องไม่ตรงกัน'; el.style.display = 'block'; return; }
@@ -220,15 +332,210 @@ document.getElementById('setupbtn').addEventListener('click', function () {
     .then(function () { btn.disabled = false; btn.textContent = 'ตั้งรหัสและเข้าระบบ'; });
 });
 
-// ----- เปลี่ยนรหัสทีม (ต้องรู้รหัสเดิม) -----
-document.getElementById('chkey').addEventListener('click', function () {
-  var p = document.getElementById('chkeypanel');
-  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+function enter(haveData) {
+  $('login').style.display = 'none';
+  $('app').classList.add('on');
+  if (haveData) { renderAll(); } else { load(); }
+}
+
+// ----- nav -----
+function show(view) {
+  $('dashview').style.display = view === 'dash' ? 'block' : 'none';
+  $('listview').style.display = view === 'list' ? 'block' : 'none';
+  $('detailview').style.display = view === 'detail' ? 'block' : 'none';
+  $('nav-dash').classList.toggle('on', view === 'dash');
+  $('nav-ticket').classList.toggle('on', view !== 'dash');
+  window.scrollTo(0, 0);
+}
+$('nav-dash').addEventListener('click', function () { show('dash'); });
+$('nav-ticket').addEventListener('click', function () { show('list'); });
+$('backbtn').addEventListener('click', function () { show('list'); });
+$('logout').addEventListener('click', function () {
+  try { localStorage.removeItem('itkey'); } catch (e) {}
+  location.reload();
 });
-document.getElementById('ck-save').addEventListener('click', function () {
-  var oldK = document.getElementById('ck-old').value.trim();
-  var newK = document.getElementById('ck-new').value.trim();
-  var msg = document.getElementById('ck-msg');
+$('refresh1').addEventListener('click', load);
+$('refresh2').addEventListener('click', load);
+$('search').addEventListener('input', renderList);
+$('fstatus').addEventListener('change', renderList);
+
+// ----- data -----
+function load() {
+  $('dashload').style.display = 'block';
+  fetch(GAS_URL + '?api=adminList&key=' + encodeURIComponent(key))
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      all = res.tickets;
+      renderAll();
+    })
+    .catch(function (e) {
+      $('dashload').textContent = 'โหลดไม่สำเร็จ: ' + (e.message || e);
+    });
+}
+
+function renderAll() { renderDash(); renderList(); }
+
+// ----- dashboard -----
+function renderDash() {
+  var c = { 'ทั้งหมด': all.length };
+  STATUSES.forEach(function (s) { c[s] = 0; });
+  all.forEach(function (t) { if (c[t.status] !== undefined) c[t.status]++; });
+  var cards = [
+    { lbl: 'Total Ticket', num: c['ทั้งหมด'], cls: '' },
+    { lbl: 'รอรับเรื่อง', num: c['รอรับเรื่อง'], cls: 't-new' },
+    { lbl: 'กำลังดำเนินการ', num: c['รับเรื่องแล้ว'] + c['กำลังดำเนินการ'] + c['รอข้อมูลเพิ่มเติม'], cls: 't-doing' },
+    { lbl: 'เสร็จสิ้น', num: c['เสร็จสิ้น'], cls: 't-done' },
+    { lbl: 'ปิดเคส', num: c['ปิดแล้ว'], cls: 't-closed' }
+  ];
+  $('stats').innerHTML = cards.map(function (x) {
+    return '<div class="stat ' + x.cls + '"><div class="lbl">' + x.lbl + '</div><div class="num">' + x.num + '</div></div>';
+  }).join('');
+  var recent = all.slice(0, 8);
+  $('recenttable').querySelector('tbody').innerHTML = recent.map(rowHtml).join('');
+  bindRows($('recenttable'));
+  $('dashload').style.display = recent.length ? 'none' : 'block';
+  if (!recent.length) $('dashload').textContent = 'ยังไม่มีเคสในระบบ';
+}
+
+// ----- list -----
+function visible() {
+  var f = $('fstatus').value;
+  var q = $('search').value.trim().toLowerCase();
+  return all.filter(function (t) {
+    if (f === 'เปิดอยู่' && OPEN_SET.indexOf(t.status) === -1) return false;
+    if (f !== 'ทั้งหมด' && f !== 'เปิดอยู่' && t.status !== f) return false;
+    if (q) {
+      var hay = (t.no + ' ' + t.name + ' ' + t.category + ' ' + t.detail + ' ' + (t.note || '')).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+}
+
+function rowHtml(t) {
+  return '<tr data-no="' + esc(t.no) + '"' + (t.no === selNo ? ' class="sel"' : '') + '>' +
+    '<td class="no">' + esc(t.no) + '</td>' +
+    '<td class="subject">' + esc(t.category) + ' · ' + esc(t.detail) + '</td>' +
+    '<td>' + esc(t.name) + '</td>' +
+    '<td>' + ubadge(t.urgency) + '</td>' +
+    '<td>' + badge(t.status) + '</td>' +
+    '<td class="when">' + esc(t.openedAt) + '</td></tr>';
+}
+
+function bindRows(table) {
+  [].forEach.call(table.querySelectorAll('tbody tr'), function (tr) {
+    tr.addEventListener('click', function () { openDetail(tr.dataset.no); });
+  });
+}
+
+function renderList() {
+  var v = visible();
+  $('tickettable').querySelector('tbody').innerHTML = v.map(rowHtml).join('');
+  bindRows($('tickettable'));
+  $('listempty').style.display = v.length ? 'none' : 'block';
+  $('listcount').textContent = 'แสดงผล ' + v.length + ' จาก ' + all.length + ' รายการ';
+}
+
+// ----- detail -----
+function openDetail(no) {
+  selNo = no;
+  var t = all.filter(function (x) { return x.no === no; })[0];
+  if (!t) return;
+  curTicket = t;
+  pickStatus = null;
+  $('d-no').textContent = t.no;
+  $('d-badge').innerHTML = badge(t.status);
+  $('d-cat').textContent = t.category;
+  $('d-name').textContent = t.name;
+  $('d-urg').innerHTML = ubadge(t.urgency);
+  $('d-loc').innerHTML = t.location && t.location !== '-' ? '<span class="locpill">' + esc(t.location) + '</span>' : '-';
+  $('d-open').textContent = t.openedAt;
+  $('d-close').textContent = t.closedAt || '-';
+  $('d-detail').textContent = t.detail;
+  $('f-assignee').value = t.note || '';
+  $('f-note').value = ''; $('f-msg').value = ''; $('f-notify').checked = true;
+  $('savemsg').style.display = 'none';
+  renderFlow();
+  $('tl').innerHTML = '<li><span class="t">กำลังโหลด...</span></li>';
+  show('detail');
+  fetch(GAS_URL + '?api=adminDetail&key=' + encodeURIComponent(key) + '&no=' + encodeURIComponent(no))
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      var items = [{ time: t.openedAt, kind: 'เปิดเคส', body: t.detail }].concat(res.updates);
+      $('tl').innerHTML = items.map(function (u) {
+        var body = /^https?:\/\//.test(u.body)
+          ? '<a href="' + esc(u.body) + '" target="_blank" rel="noopener">เปิดดูรูป/ลิงก์</a>' : esc(u.body);
+        return '<li' + (u.kind === 'โน้ต IT' ? ' class="internal"' : '') + '><div class="t">' + esc(u.time) +
+          '</div><div class="k">' + esc(u.kind) + '</div><div class="b">' + body + '</div></li>';
+      }).join('');
+    })
+    .catch(function (e) {
+      $('tl').innerHTML = '<li><span class="t">โหลดไม่สำเร็จ: ' + esc(e.message || e) + '</span></li>';
+    });
+}
+
+// workflow chips: ปัจจุบัน = เขียว, ที่เลือกจะเปลี่ยน = ฟ้า
+function renderFlow() {
+  var html = [];
+  STATUSES.forEach(function (s, i) {
+    if (i) html.push('<span class="arrow">&rarr;</span>');
+    var cls = 'step';
+    if (s === curTicket.status && !pickStatus) cls += ' cur';
+    else if (s === pickStatus) cls += ' pick';
+    else if (s === curTicket.status) cls += ' cur';
+    html.push('<button type="button" class="' + cls + '" data-s="' + esc(s) + '">' + esc(s) + '</button>');
+  });
+  $('flow').innerHTML = html.join('');
+  [].forEach.call($('flow').querySelectorAll('.step'), function (b) {
+    b.addEventListener('click', function () {
+      pickStatus = b.dataset.s === curTicket.status ? null : b.dataset.s;
+      renderFlow();
+    });
+  });
+}
+
+$('savebtn').addEventListener('click', function () {
+  var t = curTicket;
+  if (!t) return;
+  var btn = $('savebtn');
+  var msg = $('savemsg');
+  var body = {
+    action: 'adminUpdate', key: key, no: t.no,
+    assignee: $('f-assignee').value.trim(),
+    note: $('f-note').value.trim(),
+    message: $('f-msg').value.trim(),
+    notify: $('f-notify').checked
+  };
+  if (pickStatus) body.status = pickStatus;
+  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  msg.className = 'msg';
+  fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      msg.textContent = 'บันทึกแล้ว'; msg.className = 'msg ok'; msg.style.display = 'block';
+      return fetch(GAS_URL + '?api=adminList&key=' + encodeURIComponent(key))
+        .then(function (r) { return r.json(); })
+        .then(function (res2) { if (res2.ok) { all = res2.tickets; renderDash(); renderList(); openDetail(t.no); } });
+    })
+    .catch(function (e) {
+      msg.textContent = 'ผิดพลาด: ' + (e.message || e); msg.className = 'msg bad'; msg.style.display = 'block';
+    })
+    .then(function () { btn.disabled = false; btn.textContent = 'บันทึก'; });
+});
+
+// ----- เปลี่ยนรหัสทีม -----
+$('chkey2').addEventListener('click', function () {
+  var p = $('chkeypanel');
+  p.style.display = p.style.display === 'block' ? 'none' : 'block';
+  window.scrollTo(0, 0);
+});
+$('ck-save').addEventListener('click', function () {
+  var oldK = $('ck-old').value.trim();
+  var newK = $('ck-new').value.trim();
+  var msg = $('ck-msg');
   msg.className = 'msg'; msg.style.display = 'inline';
   if (newK.length < 6) { msg.textContent = 'รหัสใหม่ต้องยาวอย่างน้อย 6 ตัวอักษร'; msg.className = 'msg bad'; return; }
   var btn = this;
@@ -240,153 +547,11 @@ document.getElementById('ck-save').addEventListener('click', function () {
       key = newK;
       try { localStorage.setItem('itkey', newK); } catch (e) {}
       msg.textContent = 'เปลี่ยนรหัสแล้ว'; msg.className = 'msg ok';
-      document.getElementById('ck-old').value = ''; document.getElementById('ck-new').value = '';
+      $('ck-old').value = ''; $('ck-new').value = '';
     })
     .catch(function (e) { msg.textContent = '' + (e.message || e); msg.className = 'msg bad'; })
     .then(function () { btn.disabled = false; });
 });
-
-function enter(haveData) {
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  if (haveData) { renderList(); } else { load(); }
-}
-
-document.getElementById('logout').addEventListener('click', function () {
-  try { localStorage.removeItem('itkey'); } catch (e) {}
-  location.reload();
-});
-document.getElementById('refresh').addEventListener('click', load);
-document.getElementById('search').addEventListener('input', renderList);
-[].forEach.call(document.querySelectorAll('.fchip'), function (c) {
-  c.addEventListener('click', function () {
-    [].forEach.call(document.querySelectorAll('.fchip'), function (x) { x.classList.remove('on'); });
-    c.classList.add('on');
-    filter = c.dataset.f;
-    renderList();
-  });
-});
-
-function load() {
-  document.getElementById('list').innerHTML = '<div class="loading">กำลังโหลด...</div>';
-  fetch(GAS_URL + '?api=adminList&key=' + encodeURIComponent(key))
-    .then(function (r) { return r.json(); })
-    .then(function (res) {
-      if (!res.ok) throw new Error(res.error || 'server error');
-      all = res.tickets;
-      renderList();
-    })
-    .catch(function (e) {
-      document.getElementById('list').innerHTML = '<div class="empty">โหลดไม่สำเร็จ: ' + esc(e.message || e) + '</div>';
-    });
-}
-
-function visible() {
-  var q = document.getElementById('search').value.trim().toLowerCase();
-  return all.filter(function (t) {
-    if (filter === 'เปิดอยู่' && OPEN_SET.indexOf(t.status) === -1) return false;
-    if (filter !== 'ทั้งหมด' && filter !== 'เปิดอยู่' && t.status !== filter) return false;
-    if (q) {
-      var hay = (t.no + ' ' + t.name + ' ' + t.category + ' ' + t.detail + ' ' + (t.note || '')).toLowerCase();
-      if (hay.indexOf(q) === -1) return false;
-    }
-    return true;
-  });
-}
-
-function renderList() {
-  var v = visible();
-  var el = document.getElementById('list');
-  if (!v.length) { el.innerHTML = '<div class="empty">ไม่มีเคสตามเงื่อนไขนี้</div>'; return; }
-  el.innerHTML = v.map(function (t) {
-    return '<div class="tcard' + (t.no === selNo ? ' sel' : '') + '" data-no="' + esc(t.no) + '">' +
-      '<div class="row1"><span class="no">' + esc(t.no) + '</span>' + badge(t.status) + '</div>' +
-      '<div class="sum">' + esc(t.category) + ' · ' + esc(t.detail).slice(0, 70) + '</div>' +
-      '<div class="meta">' + esc(t.name) + ' · ' + esc(t.openedAt) +
-      ' · <span class="urg-' + esc(t.urgency) + '">เร่งด่วน: ' + esc(t.urgency) + '</span>' +
-      (t.note ? ' · ผู้รับผิดชอบ/โน้ต: ' + esc(t.note) : '') + '</div></div>';
-  }).join('');
-  [].forEach.call(el.querySelectorAll('.tcard'), function (c) {
-    c.addEventListener('click', function () { openDetail(c.dataset.no); });
-  });
-}
-
-function openDetail(no) {
-  selNo = no;
-  renderList();
-  var t = all.filter(function (x) { return x.no === no; })[0];
-  if (!t) return;
-  var d = document.getElementById('detail');
-  d.innerHTML =
-    '<div class="dcard">' +
-    '<div class="row1"><span class="no" style="font-size:17px">' + esc(t.no) + '</span>' + badge(t.status) + '</div>' +
-    '<dl class="kv">' +
-    '<dt>ผู้แจ้ง</dt><dd>' + esc(t.name) + '</dd>' +
-    '<dt>ประเภท</dt><dd>' + esc(t.category) + '</dd>' +
-    '<dt>รายละเอียด</dt><dd>' + esc(t.detail) + '</dd>' +
-    '<dt>สถานที่</dt><dd>' + esc(t.location || '-') + '</dd>' +
-    '<dt>ความเร่งด่วน</dt><dd class="urg-' + esc(t.urgency) + '">' + esc(t.urgency) + '</dd>' +
-    '<dt>เปิดเมื่อ</dt><dd>' + esc(t.openedAt) + '</dd>' +
-    '<dt>ปิดเมื่อ</dt><dd>' + esc(t.closedAt || '-') + '</dd>' +
-    '</dl></div>' +
-    '<div class="dcard">' +
-    '<div class="field"><label for="f-status">เปลี่ยนสถานะ</label><select id="f-status">' +
-    STATUSES.map(function (s) { return '<option' + (s === t.status ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
-    '</select></div>' +
-    '<div class="field"><label for="f-assignee">ผู้รับผิดชอบ / โน้ตสั้น (แสดงในชีตคอลัมน์หมายเหตุ)</label>' +
-    '<input type="text" id="f-assignee" value="' + esc(t.note || '') + '"></div>' +
-    '<div class="field"><label for="f-note">โน้ตภายใน IT (ผู้แจ้งไม่เห็น)</label><textarea id="f-note"></textarea></div>' +
-    '<div class="field"><label for="f-msg">ข้อความถึงผู้แจ้ง (ส่งทาง LINE, ไม่บังคับ)</label><textarea id="f-msg"></textarea></div>' +
-    '<label class="chk"><input type="checkbox" id="f-notify" checked> แจ้งผู้แจ้งทาง LINE เมื่อบันทึก</label>' +
-    '<button class="btn primary" id="savebtn" style="width:100%">บันทึก</button>' +
-    '<div class="msg" id="savemsg"></div></div>' +
-    '<div class="dcard"><div class="row1"><strong style="font-size:14px">ความเคลื่อนไหว</strong>' +
-    '<span class="hint">จุดเหลือง = ภายใน IT</span></div><ul class="tl" id="tl"><li><span class="t">กำลังโหลด...</span></li></ul></div>';
-  document.getElementById('savebtn').addEventListener('click', function () { save(t); });
-  fetch(GAS_URL + '?api=adminDetail&key=' + encodeURIComponent(key) + '&no=' + encodeURIComponent(no))
-    .then(function (r) { return r.json(); })
-    .then(function (res) {
-      if (!res.ok) throw new Error(res.error || 'server error');
-      var items = [{ time: t.openedAt, kind: 'เปิดเคส', body: t.detail }].concat(res.updates);
-      document.getElementById('tl').innerHTML = items.map(function (u) {
-        var body = /^https?:\/\//.test(u.body)
-          ? '<a href="' + esc(u.body) + '" target="_blank" rel="noopener">เปิดดูรูป/ลิงก์</a>' : esc(u.body);
-        return '<li' + (u.kind === 'โน้ต IT' ? ' class="internal"' : '') + '><div class="t">' + esc(u.time) +
-          '</div><div class="k">' + esc(u.kind) + '</div><div class="b">' + body + '</div></li>';
-      }).join('');
-    })
-    .catch(function (e) {
-      document.getElementById('tl').innerHTML = '<li><span class="t">โหลดไม่สำเร็จ: ' + esc(e.message || e) + '</span></li>';
-    });
-}
-
-function save(t) {
-  var btn = document.getElementById('savebtn');
-  var msg = document.getElementById('savemsg');
-  var newStatus = document.getElementById('f-status').value;
-  var body = {
-    action: 'adminUpdate', key: key, no: t.no,
-    assignee: document.getElementById('f-assignee').value.trim(),
-    note: document.getElementById('f-note').value.trim(),
-    message: document.getElementById('f-msg').value.trim(),
-    notify: document.getElementById('f-notify').checked
-  };
-  if (newStatus !== t.status) body.status = newStatus;
-  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
-  msg.className = 'msg';
-  fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
-    .then(function (r) { return r.json(); })
-    .then(function (res) {
-      if (!res.ok) throw new Error(res.error || 'server error');
-      msg.textContent = 'บันทึกแล้ว'; msg.className = 'msg ok'; msg.style.display = 'block';
-      load();
-      setTimeout(function () { openDetail(t.no); }, 400);
-    })
-    .catch(function (e) {
-      msg.textContent = 'ผิดพลาด: ' + (e.message || e); msg.className = 'msg bad'; msg.style.display = 'block';
-    })
-    .then(function () { btn.disabled = false; btn.textContent = 'บันทึก'; });
-}
 </script>
 </body>
 </html>
