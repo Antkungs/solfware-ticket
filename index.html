@@ -80,6 +80,8 @@ button.cta[data-state="loading"] .spin{display:block}
 .done button.back:hover{border-color:#b9c9bd}
 .done button.back:focus-visible{outline:2px solid var(--color-focus);outline-offset:2px}
 .done button.back:active{transform:translateY(1px)}
+.done .statuslink{display:block;margin:0 auto var(--s4);font-size:14px;font-weight:600;color:var(--color-accent-ink)}
+.statuslink-form{display:block;text-align:center;margin-top:var(--s4);font-size:14px;font-weight:600;color:var(--color-accent-ink)}
 @media (min-width:600px){.hero h1{font-size:26px}.wrap{padding-top:var(--s8)}}
 @media (prefers-reduced-motion:reduce){*{transition-duration:0.01ms !important;animation-duration:0.01ms !important}button.cta .spin{animation:none;opacity:0.7}}
 </style>
@@ -126,13 +128,15 @@ button.cta[data-state="loading"] .spin{display:block}
 <div class="bar" id="bar">
 <button class="cta" id="submit" type="button"><span class="spin" aria-hidden="true"></span><span id="btntext">เปิด Ticket</span></button>
 <div class="form-err" id="formerr"></div>
+<a class="statuslink-form" href="status.html">เช็คสถานะเคสที่เคยแจ้งไว้</a>
 </div>
 </main>
 <main class="wrap done" id="doneview">
 <div class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
 <h2>เปิด Ticket สำเร็จ</h2>
 <div class="no" id="ticketno">T-0000</div>
-<div class="hint">พิมพ์รายละเอียดหรือส่งรูปเพิ่มในแชทได้เลย ระบบจะแนบเข้า ticket นี้ให้อัตโนมัติจนกว่าเคสจะปิด</div>
+<div class="hint">พิมพ์รายละเอียดหรือส่งรูปเพิ่มในแชทได้เลย ระบบจะแนบเข้า ticket ให้อัตโนมัติ (ถ้ามีหลายใบเปิดอยู่ ระบบจะถามว่าแนบใบไหน)</div>
+<a class="statuslink" href="status.html">ดูสถานะเคสทั้งหมดของคุณ</a>
 <button class="back" type="button" onclick="liff.closeWindow()">กลับไปที่แชท</button>
 </main>
 <script>
