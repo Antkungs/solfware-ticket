@@ -91,9 +91,16 @@ button,select,input{font:inherit}
 <body>
 <div id="login">
 <h1>IT Ticket — จัดการเคส</h1>
-<p>ใส่รหัสทีม IT เพื่อเข้าระบบ</p>
+<p id="loginhint">ใส่รหัสทีม IT เพื่อเข้าระบบ</p>
+<div id="loginform">
 <input type="password" id="pin" placeholder="รหัสทีม" autocomplete="current-password">
 <button class="btn primary" style="width:100%" id="loginbtn">เข้าระบบ</button>
+</div>
+<div id="setupform" style="display:none">
+<input type="password" id="newpin" placeholder="ตั้งรหัสทีม (อย่างน้อย 6 ตัวอักษร)" autocomplete="new-password">
+<input type="password" id="newpin2" placeholder="พิมพ์รหัสซ้ำอีกครั้ง" autocomplete="new-password">
+<button class="btn primary" style="width:100%" id="setupbtn">ตั้งรหัสและเข้าระบบ</button>
+</div>
 <div class="err" id="loginerr"></div>
 </div>
 
@@ -102,8 +109,15 @@ button,select,input{font:inherit}
 <h1>IT Ticket — จัดการเคส</h1>
 <div class="r">
 <button class="btn" id="refresh">รีเฟรช</button>
+<button class="btn" id="chkey">เปลี่ยนรหัสทีม</button>
 <button class="btn" id="logout">ออกจากระบบ</button>
 </div>
+</div>
+<div class="dcard" id="chkeypanel" style="display:none;max-width:420px">
+<div class="field"><label for="ck-old">รหัสเดิม</label><input type="password" id="ck-old" autocomplete="current-password"></div>
+<div class="field"><label for="ck-new">รหัสใหม่ (อย่างน้อย 6 ตัวอักษร)</label><input type="password" id="ck-new" autocomplete="new-password"></div>
+<button class="btn primary" id="ck-save">เปลี่ยนรหัส</button>
+<span class="msg" id="ck-msg" style="margin-left:8px"></span>
 </div>
 <div class="filters" id="filters">
 <button class="fchip on" data-f="เปิดอยู่">เปิดอยู่</button>
@@ -141,6 +155,13 @@ function badge(st) { return '<span class="badge ' + (BADGE[st] || 'b-closed') + 
 // ----- login -----
 try { key = localStorage.getItem('itkey'); } catch (e) {}
 if (key) { enter(); }
+else {
+  // ยังไม่เคย login: เช็คว่าระบบตั้งรหัสหรือยัง ถ้ายัง → โชว์ฟอร์มตั้งรหัสครั้งแรกเลย
+  fetch(GAS_URL + '?api=adminList&key=probe')
+    .then(function (r) { return r.json(); })
+    .then(function (res) { if (res && res.needSetup) showSetup(); })
+    .catch(function () {});
+}
 
 document.getElementById('loginbtn').addEventListener('click', doLogin);
 document.getElementById('pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
@@ -150,10 +171,14 @@ function doLogin() {
   if (!pin) return;
   var btn = document.getElementById('loginbtn');
   btn.disabled = true; btn.textContent = 'กำลังตรวจ...';
+  document.getElementById('loginerr').style.display = 'none';
   fetch(GAS_URL + '?api=adminList&key=' + encodeURIComponent(pin))
     .then(function (r) { return r.json(); })
     .then(function (res) {
-      if (!res.ok) throw new Error(res.error || 'รหัสไม่ถูกต้อง');
+      if (!res.ok) {
+        if (res.needSetup) { showSetup(); return; }
+        throw new Error(res.error || 'รหัสไม่ถูกต้อง');
+      }
       key = pin;
       try { localStorage.setItem('itkey', pin); } catch (e) {}
       all = res.tickets;
@@ -165,6 +190,61 @@ function doLogin() {
     })
     .then(function () { btn.disabled = false; btn.textContent = 'เข้าระบบ'; });
 }
+
+// ----- ตั้งรหัสครั้งแรก (ระบบยังไม่มีรหัส) -----
+function showSetup() {
+  document.getElementById('loginform').style.display = 'none';
+  document.getElementById('setupform').style.display = 'block';
+  document.getElementById('loginhint').textContent = 'ระบบยังไม่มีรหัสทีม ตั้งรหัสครั้งแรกได้เลย';
+  document.getElementById('loginerr').style.display = 'none';
+}
+
+document.getElementById('setupbtn').addEventListener('click', function () {
+  var n1 = document.getElementById('newpin').value.trim();
+  var n2 = document.getElementById('newpin2').value.trim();
+  var el = document.getElementById('loginerr');
+  el.style.display = 'none';
+  if (n1.length < 6) { el.textContent = 'รหัสต้องยาวอย่างน้อย 6 ตัวอักษร'; el.style.display = 'block'; return; }
+  if (n1 !== n2) { el.textContent = 'รหัสสองช่องไม่ตรงกัน'; el.style.display = 'block'; return; }
+  var btn = this;
+  btn.disabled = true; btn.textContent = 'กำลังตั้งรหัส...';
+  fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'setAdminKey', newKey: n1 }) })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      key = n1;
+      try { localStorage.setItem('itkey', n1); } catch (e) {}
+      enter(false);
+    })
+    .catch(function (e) { el.textContent = '' + (e.message || e); el.style.display = 'block'; })
+    .then(function () { btn.disabled = false; btn.textContent = 'ตั้งรหัสและเข้าระบบ'; });
+});
+
+// ----- เปลี่ยนรหัสทีม (ต้องรู้รหัสเดิม) -----
+document.getElementById('chkey').addEventListener('click', function () {
+  var p = document.getElementById('chkeypanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+});
+document.getElementById('ck-save').addEventListener('click', function () {
+  var oldK = document.getElementById('ck-old').value.trim();
+  var newK = document.getElementById('ck-new').value.trim();
+  var msg = document.getElementById('ck-msg');
+  msg.className = 'msg'; msg.style.display = 'inline';
+  if (newK.length < 6) { msg.textContent = 'รหัสใหม่ต้องยาวอย่างน้อย 6 ตัวอักษร'; msg.className = 'msg bad'; return; }
+  var btn = this;
+  btn.disabled = true;
+  fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'setAdminKey', oldKey: oldK, newKey: newK }) })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'server error');
+      key = newK;
+      try { localStorage.setItem('itkey', newK); } catch (e) {}
+      msg.textContent = 'เปลี่ยนรหัสแล้ว'; msg.className = 'msg ok';
+      document.getElementById('ck-old').value = ''; document.getElementById('ck-new').value = '';
+    })
+    .catch(function (e) { msg.textContent = '' + (e.message || e); msg.className = 'msg bad'; })
+    .then(function () { btn.disabled = false; });
+});
 
 function enter(haveData) {
   document.getElementById('login').style.display = 'none';
